@@ -13,7 +13,7 @@ class ContenidoController extends Controller
      */
     public function index()
     {
-        //
+         return $categoria->contenidos;
     }
 
     /**
@@ -21,7 +21,16 @@ class ContenidoController extends Controller
      */
     public function store(Request $request)
     {
-        //
+         $request->validate([
+            'nombreContenido' => 'required|string|max:255',
+            'informacion' => 'required|string',
+            'imagenContenido' => 'nullable|string|max:255',
+        ]);
+
+        // Crea el nuevo contenido y lo asocia automáticamente con la categoría.
+        $contenido = $categoria->contenidos()->create($request->all());
+
+        return response()->json($contenido, 201);
     }
 
     /**
@@ -29,7 +38,7 @@ class ContenidoController extends Controller
      */
     public function show(Contenido $contenido)
     {
-        //
+         return $contenido;
     }
 
     /**
@@ -37,7 +46,17 @@ class ContenidoController extends Controller
      */
     public function update(Request $request, Contenido $contenido)
     {
-        //
+        $request->validate([
+            'nombreContenido' => 'required|string|max:255',
+            'informacion' => 'required|string',
+            'imagenContenido' => 'nullable|string|max:255',
+            'categoria_id' => 'sometimes|required|exists:categorias,id' // Opcional: permitir cambiar de categoría
+        ]);
+
+        // Actualiza el contenido con los nuevos datos.
+        $contenido->update($request->all());
+
+        return response()->json($contenido, 200);
     }
 
     /**
@@ -45,6 +64,9 @@ class ContenidoController extends Controller
      */
     public function destroy(Contenido $contenido)
     {
-        //
+        // Elimina el contenido de la base de datos.
+        $contenido->delete();
+
+        return response()->json(null, 204);
     }
 }
